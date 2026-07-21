@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const dbHelper = require('./db');
 const { query } = dbHelper;
-const { uploadFile, deleteFile } = require('./s3');
+const { uploadFile, deleteFile, buildPublicUrl } = require('./s3');
 const { parseFileContent } = require('./utils/parser');
 
 // Translation helper using Sarvam Translate API with Google Translate fallback
@@ -93,6 +93,7 @@ async function translateText(text, targetLangCode) {
 
 const app = express();
 const PORT = process.env.PORT || 5002;
+const EIDGAH_PDF_URL = buildPublicUrl('/uploads/___________________________________________________________________________________________________________1784557956857.pdf');
 
 // Enable CORS & JSON parsing
 app.use(cors());
@@ -757,7 +758,7 @@ app.post('/api/chat', async (req, res) => {
           answer: translatedAnswer,
           documentId: 5,
           documentTitle: await translateText("Eidgah", targetLang),
-          documentUrl: "http://localhost:5002/uploads/___________________________________________________________________________________________________________1784557956857.pdf"
+          documentUrl: EIDGAH_PDF_URL
         });
       }
 
@@ -769,7 +770,7 @@ app.post('/api/chat', async (req, res) => {
           answer: translatedAnswer,
           documentId: 5,
           documentTitle: await translateText("Eidgah", targetLang),
-          documentUrl: "http://localhost:5002/uploads/___________________________________________________________________________________________________________1784557956857.pdf"
+          documentUrl: EIDGAH_PDF_URL
         });
       }
       
@@ -781,7 +782,7 @@ app.post('/api/chat', async (req, res) => {
           answer: translatedAnswer,
           documentId: 5,
           documentTitle: await translateText("Eidgah", targetLang),
-          documentUrl: "http://localhost:5002/uploads/___________________________________________________________________________________________________________1784557956857.pdf"
+          documentUrl: EIDGAH_PDF_URL
         });
       }
 
@@ -793,7 +794,7 @@ app.post('/api/chat', async (req, res) => {
           answer: translatedAnswer,
           documentId: 5,
           documentTitle: await translateText("Eidgah", targetLang),
-          documentUrl: "http://localhost:5002/uploads/___________________________________________________________________________________________________________1784557956857.pdf"
+          documentUrl: EIDGAH_PDF_URL
         });
       }
 
@@ -805,7 +806,7 @@ app.post('/api/chat', async (req, res) => {
           answer: translatedAnswer,
           documentId: 5,
           documentTitle: await translateText("Eidgah", targetLang),
-          documentUrl: "http://localhost:5002/uploads/___________________________________________________________________________________________________________1784557956857.pdf"
+          documentUrl: EIDGAH_PDF_URL
         });
       }
     }
@@ -1230,6 +1231,7 @@ app.post('/api/sarvam/tts', async (req, res) => {
 // ----------------------------------------------------
 
 app.listen(PORT, () => {
-  console.log(`MoPA Bot backend server is running on http://localhost:${PORT}`);
+  const publicBaseUrl = process.env.PUBLIC_BASE_URL || process.env.SERVER_URL;
+  const serverAddress = publicBaseUrl ? publicBaseUrl.replace(/\/$/, '') : `port ${PORT}`;
+  console.log(`MoPA Bot backend server is running on ${serverAddress}`);
 });
-

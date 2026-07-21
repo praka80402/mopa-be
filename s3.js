@@ -17,6 +17,15 @@ const isS3Configured = !!(
   process.env.AWS_REGION
 );
 
+function getPublicBaseUrl() {
+  return (process.env.PUBLIC_BASE_URL || process.env.SERVER_URL || '').replace(/\/$/, '');
+}
+
+function buildPublicUrl(routePath) {
+  const baseUrl = getPublicBaseUrl();
+  return baseUrl ? `${baseUrl}${routePath}` : routePath;
+}
+
 let s3Client = null;
 if (isS3Configured) {
   try {
@@ -72,8 +81,7 @@ async function uploadFile(fileBuffer, originalName, mimeType) {
   // Local fallback
   const localPath = path.join(uploadDir, uniqueName);
   fs.writeFileSync(localPath, fileBuffer);
-  const port = process.env.PORT || 5002;
-  const localUrl = `http://localhost:${port}/uploads/${uniqueName}`;
+  const localUrl = buildPublicUrl(`/uploads/${uniqueName}`);
   console.log(`Saved ${originalName} locally: ${localUrl}`);
   return localUrl;
 }
@@ -121,5 +129,6 @@ async function deleteFile(fileUrl) {
 
 module.exports = {
   uploadFile,
-  deleteFile
+  deleteFile,
+  buildPublicUrl
 };
